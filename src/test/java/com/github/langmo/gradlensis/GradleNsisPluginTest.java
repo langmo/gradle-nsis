@@ -1,4 +1,4 @@
-package io.github.langmo.gradlensis;
+package com.github.langmo.gradlensis;
 
 import org.gradle.testfixtures.ProjectBuilder;
 import org.gradle.api.Project;

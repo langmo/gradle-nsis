@@ -1,4 +1,4 @@
-package io.github.langmo.gradlensis;
+package com.github.langmo.gradlensis;
 
 import java.io.File;
 import java.io.IOException;

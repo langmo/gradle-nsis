@@ -1,4 +1,4 @@
-package io.github.langmo.gradlensis;
+package com.github.langmo.gradlensis;
 
 import org.gradle.api.Project;
 import org.gradle.api.Action;
@@ -24,8 +24,9 @@ public class GradleNsisPlugin implements Plugin<Project>
 			public void execute(GradleNsisTask task) {
 				task.setGroup(TASK_GROUP);
 				task.setDescription("Runs NSIS to generate an installer");
-				task.getNsisConfig().set(extension.getNsisConfig());
+				task.getConfiguration().set(extension.getConfiguration());
 				task.getExtractTo().set(extension.getExtractTo());
+				task.getRunIn().set(extension.getRunIn());
 			}
 			
 		});
