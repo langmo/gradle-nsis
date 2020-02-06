@@ -24,38 +24,6 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 }
 
-/*gradlePlugin {
-    // Define the plugin
-    plugins {
-        gradlensis {
-            id = 'com.github.langmo.gradle-nsis'
-            implementationClass = 'com.github.langmo.gradlensis.GradleNsisPlugin'
-        }
-    }
-}*/
-
-// Add a source set for the functional test suite
-sourceSets {
-    functionalTest {
-    }
-}
-
-gradlePlugin.testSourceSets(sourceSets.functionalTest)
-configurations.functionalTestImplementation.extendsFrom(configurations.testImplementation)
-
-// Add a task to run the functional tests
-task functionalTest(type: Test) {
-    testClassesDirs = sourceSets.functionalTest.output.classesDirs
-    classpath = sourceSets.functionalTest.runtimeClasspath
-}
-
-check {
-    // Run the functional tests as part of `check`
-    dependsOn(tasks.functionalTest)
-}
-
-
-
 group = 'com.github.langmo'
 version = '0.1.0'
 sourceCompatibility = JavaVersion.VERSION_1_7

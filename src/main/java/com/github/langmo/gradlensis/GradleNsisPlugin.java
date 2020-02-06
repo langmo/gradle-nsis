@@ -27,6 +27,7 @@ public class GradleNsisPlugin implements Plugin<Project>
 				task.getConfiguration().set(extension.getConfiguration());
 				task.getExtractTo().set(extension.getExtractTo());
 				task.getRunIn().set(extension.getRunIn());
+				task.getVariables().set(extension.getVariables());
 			}
 			
 		});
