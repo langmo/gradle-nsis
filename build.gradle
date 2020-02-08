@@ -8,8 +8,9 @@
 
 plugins {
     // Apply the Java Gradle plugin development plugin to add support for developing Gradle plugins
+	id "com.gradle.plugin-publish" version "0.10.1"
     id 'java-gradle-plugin'
-	id 'maven-publish'
+	//id 'maven-publish'
 	id 'eclipse'
 }
 
@@ -53,25 +54,11 @@ jar.doFirst{
 		)
 	}
 }
-
+/*
 publishing {
     publications {
         gradlensis(MavenPublication) {
             from components.java
-			/*descriptor {
-                license {
-                    name = 'The Apache License, Version 2.0'
-                    url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                }
-                author {
-                    name = 'Moritz Lang'
-                    url = 'https://langmo.github.io/'
-                }
-                description {
-                    text = 'A gradle plugin to run NSIS installer.'
-                    homepage = 'https://github.com/langmo/gradle-nsis'
-                }
-            }*/
         }
     }
 
@@ -81,4 +68,24 @@ publishing {
             url = "file://${buildDir}/repo"
         }
     }
+}*/
+gradlePlugin {
+  plugins {
+    gradleNsisPlugin {
+      id = 'com.github.langmo.gradlensis'
+      implementationClass = 'com.github.langmo.gradlensis.GradleNsisPlugin'
+    }
+  }
+}
+pluginBundle {
+  website = 'https://github.com/langmo/gradle-nsis'
+  vcsUrl = 'https://github.com/langmo/gradle-nsis'
+  description = 'Creates NSIS installers for Windows.'
+  tags = ['NSIS', 'installer', 'windows', 'distribution']
+
+  plugins {
+    gradleNsisPlugin {
+      displayName = 'NSIS installer plugin'
+    }
+  }
 }
