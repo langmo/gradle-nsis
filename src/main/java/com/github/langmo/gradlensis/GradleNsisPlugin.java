@@ -17,17 +17,13 @@ public class GradleNsisPlugin implements Plugin<Project>
 	@Override	    
     public void apply(Project project) 
     {
-		final GradleNsisPluginExtension extension = project.getExtensions().create(EXTENSION_NAME, GradleNsisPluginExtension.class, project);
+		project.getExtensions().create(EXTENSION_NAME, GradleNsisPluginExtension.class, project);
 		project.getTasks().register(TASK_RUN_NAME, GradleNsisTask.class, new Action<GradleNsisTask>() {
 
 			@Override
 			public void execute(GradleNsisTask task) {
 				task.setGroup(TASK_GROUP);
 				task.setDescription("Runs NSIS to generate an installer");
-				task.getConfiguration().set(extension.getConfiguration());
-				task.getExtractTo().set(extension.getExtractTo());
-				task.getRunIn().set(extension.getRunIn());
-				task.getVariables().set(extension.getVariables());
 			}
 			
 		});
