@@ -99,3 +99,139 @@ File _/basic.nsi_ (see https://nsis.sourceforge.io/Docs/ for syntax):
     !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
         !insertmacro MUI_DESCRIPTION_TEXT ${SecExample} $(DESC_SecExample)
     !insertmacro MUI_FUNCTION_DESCRIPTION_END
+
+## Extended Example
+This example creates a distribution containing a simple JAR file displaying an info dialog indicating if the JVM runs with 32 or 64bit. It then uses the excellent gradle plugin gradle-launch4j (https://github.com/TheBoegl/gradle-launch4j) to generate two startup EXEs, one loading the JAR in a 32bit Java VM, and one loading it in a 64bit VM. Finally, it creates two NSIS installers using the same NSIS configuration file, one for each architecture.
+
+The raw files for this example can be found [here](https://github.com/langmo/gradle-nsis/tree/master/examples/extended).
+Run `gradlew createInstallers` to generate both installers.
+
+File _/settings.gradle_:
+
+    rootProject.name = 'extended'
+
+File _/build.gradle_:
+
+    plugins {
+        // Apply the java plugin to add support for Java
+        id 'java'
+        // Apply the distribution plugin.
+        id 'distribution'
+        // Apply the launch4j plugin to add support for generating EXE startup files
+        id 'edu.sc.seis.launch4j' version '2.4.6'
+        // Apply the gradlensis plugin to add support for generating Windows installers
+        id "com.github.langmo.gradlensis" version "0.1.0"
+    }
+    
+    // Set JVM compatibility mode to Java 1.7. Always a good idea to use older bytecode versions
+    // on Windows machines...
+    allprojects {
+        tasks.withType(JavaCompile) {
+            sourceCompatibility = '1.7'
+            targetCompatibility = '1.7'
+        } 
+    }
+        
+    // Allow JAR file to be directly executed.
+    jar {
+        manifest {
+            attributes(
+                'Main-Class': 'com.github.langmo.gradlensis.examples.extended.Example'
+            )
+        }
+    }
+    
+    // Empty task to prevent unnecessary copying of libs by launch4j
+    task emptyTask{
+    }
+    
+    // Configuration to create the EXE startup files using launch4j.
+    // We will create two EXE files, one for 32bit and one for 64 bit.
+    // Here, we only define the common properties of both files.
+    // See https://github.com/TheBoegl/gradle-launch4j for details.
+    launch4j {
+        dontWrapJar = true
+        headerType = 'gui'
+        jar = "lib/extended.jar"
+        errTitle = 'Extended gradlensis Example'
+        copyConfigurable = rootProject.tasks.emptyTask.outputs.files
+    
+        cmdLine = ""
+        chdir = '.'
+        priority = 'normal'
+        stayAlive = false
+        restartOnCrash = false
+        manifest = ""
+        classpath = ['lib/extended.jar']
+        mainClassName = "com.github.langmo.gradlensis.examples.extended.Example"
+       
+        bundledJre64Bit = false
+        bundledJreAsFallback = false
+        jreMinVersion = "1.7.0" 
+    }
+    
+    // Task to create the 64 bit version of startup EXE
+    createExe {
+        outfile = 'Example64.exe'
+        jreRuntimeBits = "64"
+    }
+    
+    // Task to create the 32 bit version of startup EXE
+    task createExe32(type: edu.sc.seis.launch4j.tasks.Launch4jLibraryTask) {
+        outfile = 'Example32.exe'
+        jreRuntimeBits = "32"
+    }
+    
+    // Create build folder with all necessary files
+    distributions {
+        nsis {
+            distributionBaseName = 'nsis'
+            contents {
+                from(createExe) {
+                    into ''
+                }
+                from(createExe32) {
+                    into ''
+                }
+                project(':') {
+                    from(jar) {
+                        into 'lib'
+                    }
+                }
+                from("${rootProject.projectDir}/LICENSE") {
+                    into ''
+                }
+            }
+        }
+    }
+    
+    // Common configuration for both installers.
+    nsis {
+        configuration = file("${rootProject.projectDir}/extended.nsi")
+        runIn =  file("${rootProject.buildDir}/install/nsis/")
+    }
+    
+    // Specific configuration for 64bit installer
+    createInstaller {
+        variables = ['WIN64':'True']
+    }
+    createInstaller.dependsOn installNsisDist
+    
+    // Specific configuration for 32bit installer
+    task createInstaller32(type: com.github.langmo.gradlensis.GradleNsisTask) {
+        variables = ['WIN32':'True']
+    }
+    createInstaller32.dependsOn installNsisDist
+    
+    // Task to create both installers.
+    task createInstallers {
+        dependsOn ":createInstaller32"
+        dependsOn ":createInstaller"
+    }
+    
+    // Add metadata for tasks such that they appear when calling gradlew tasks
+    def NSIS_GROUP = 'nsis'
+    createInstaller32.group = createInstaller.group
+    createInstaller32.description = createInstaller.description
+    createInstallers.group = createInstaller.group
+    createInstallers.description = "Creates both the 32bit and the 64bit NSIS installers"
