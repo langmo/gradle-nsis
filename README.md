@@ -29,8 +29,15 @@ The gradle-nsis plugin can be included via the standard plugin mechanism of Grad
     }
 
 ## How to configure
-| Property Name | Default Value | Comment |
+| Property Name | Default Value | Description |
 |---------------|---------------|---------|
+|File configuration      |`file("${rootProject.projectDir}/config.nsis")`|Configuration file of the NSIS installer. See examples and https://nsis.sourceforge.io/Docs/ for syntax.|
+|File extractTo          |`file("${rootProject.buildDir}/tmp/nsis/")`|Folder where the NSIS binaries are automatically extracted. Usually, there is no need to change this property.|
+|File runIn              |(Folder where NSIS configuration file is located)|Folder where the Windows task creating the NSIS installer (_makensis.exe_) is executed in (home/current directory). All file references in NSIS configuration file must be relative to this directory. Typically, this file is set to the base folder of the binaries created by the gradle project, e.g. `runIn =  file("${rootProject.buildDir}/install/my_application_name/")` would be suited when using the gradle application/distribution plugin.|
+|File destinationFolder    |`file("${rootProject.buildDir}/distributions/")`|Folder where the NSIS installer, once created, is saved. Note: Do not include file name in this property, use _destinationName_ instead. Usually, there is no need to change this property.|
+|Map<String, String> variables  |`[]`|Variables passed to NSIS installer generator, and which can be used in the NSIS configuration file. For example, when setting `variables = ['WIN64':'True']`, this is equivalent to the statement `!define WIN64 True` in the NSIS configuration file, and can e.g. be used by `!ifdef WIN64`...`!endif` conditional statements.|
+|Set<String> additionalPlugins  |`[]`|Names of additional NSIS plugins on which the NSIS configuration file depends. Currently, only the plugin [AccessControl](https://nsis.sourceforge.io/AccessControl_plug-in) is available, which can be made available via `additionalPlugins = ['AccessControl']`|
+|String destinationName |(see description)| Name of the installer which is created. Usually, the name of the installer is set in the NSIS configuration file via the _OutFile_ property, e.g. `OutFile "MyInstaller.exe"`, and there is no need to set this parameter here.|
 
 # Examples
 ## Basic Example
