@@ -1,0 +1,21 @@
+// Basic example of gradle-nsis plugin.
+// This example creates an installer copying the files
+// LICENSE and basic.nsi into the installation folder.
+// Run 
+//	gradlew createInstaller
+// to generate the installer.
+
+// Load gradle-nsis plugin
+plugins {
+	id "com.github.langmo.gradlensis" version "0.1.0"
+}
+
+// Configuration of gradle-nsis plugin. A task "createInstaller" is
+// automatically generated.
+nsis {
+	// path to the NSIS configuration file
+	configuration = file("${rootProject.projectDir}/basic.nsi")
+	// folder where the NSIS installer generator is run. All paths 
+	// in the NSIS configuration file are relative to this folder.
+	runIn =  file("${rootProject.projectDir}")
+}
