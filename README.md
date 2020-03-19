@@ -35,7 +35,7 @@ The gradle-nsis plugin can be included via the standard plugin mechanism of Grad
 # Examples
 ## Basic Example
 This example creates an installer copying the file _basic.nsi_ into the installation folder. The raw files for this example can be found [here](https://github.com/langmo/gradle-nsis/tree/master/examples/basic).
-Run `gradlew createInstaller` to generate the installer.
+Run `gradlew createInstaller` to generate the installer (the respective task is automatically generated).
 
 File _/settings.gradle_:
 
@@ -48,8 +48,7 @@ File _/build.gradle_:
         id "com.github.langmo.gradlensis" version "0.1.0"
     }
 
-    // Configuration of gradle-nsis plugin. A task "createInstaller" is
-    // automatically generated.
+    // Configuration of gradle-nsis plugin.
     nsis {
         // path to the NSIS configuration file
         configuration = file("${rootProject.projectDir}/basic.nsi")
@@ -58,7 +57,7 @@ File _/build.gradle_:
         runIn =  file("${rootProject.projectDir}")
     }
 
-File _/basic.nsi_:
+File _/basic.nsi_ (see https://nsis.sourceforge.io/Docs/ for syntax):
 
     ;Include Modern UI
     !include "MUI2.nsh"
