@@ -8,12 +8,15 @@ plugins {
 	// Apply the gradlensis plugin to add support for generating Windows installers
 	id "com.github.langmo.gradlensis" version "0.1.0"
 }
+// Set JVM compatibility mode to Java 1.7. Always a good idea to use older bytecode versions
+// on Windows machines...
 allprojects {
     tasks.withType(JavaCompile) {
         sourceCompatibility = '1.7'
         targetCompatibility = '1.7'
     } 
 }
+// Allow JAR file to be directly executed.
 jar {
   manifest {
     attributes(
@@ -41,8 +44,6 @@ launch4j {
    cmdLine = ""
    chdir = '.'
    priority = 'normal'
-   downloadUrl = "http://java.com/download"
-   supportUrl = 'http://www.youscope.org'
    stayAlive = false
    restartOnCrash = false
    manifest = ""
@@ -53,6 +54,7 @@ launch4j {
    bundledJreAsFallback = false
    jreMinVersion = "1.7.0" 
 }
+
 // Task to create the 64 bit version of startup EXE
 createExe {
     outfile = 'Example64.exe'
@@ -91,22 +93,31 @@ distributions {
 	}
 }
 
+// Common configuration for both installers.
 nsis {
 	configuration = file("${rootProject.projectDir}/extended.nsi")
 	runIn =  file("${rootProject.buildDir}/install/nsis/")
 }
+
+// Specific configuration for 64bit installer
 createInstaller {
 	variables = ['WIN64':'True']
 }
+createInstaller.dependsOn installNsisDist
+
+// Specific configuration for 32bit installer
 task createInstaller32(type: com.github.langmo.gradlensis.GradleNsisTask) {
 	variables = ['WIN32':'True']
 }
-createInstaller.dependsOn installNsisDist
 createInstaller32.dependsOn installNsisDist
+
+// Task to create both installers.
 task createInstallers {
 	dependsOn ":createInstaller32"
 	dependsOn ":createInstaller"
 }
+
+// Add metadata for tasks such that they appear when calling gradlew tasks
 def NSIS_GROUP = 'nsis'
 createInstaller32.group = createInstaller.group
 createInstaller32.description = createInstaller.description
