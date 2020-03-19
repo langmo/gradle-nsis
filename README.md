@@ -106,6 +106,18 @@ This example creates a distribution containing a simple JAR file displaying an i
 The raw files for this example can be found [here](https://github.com/langmo/gradle-nsis/tree/master/examples/extended).
 Run `gradlew createInstallers` to generate both installers.
 
+File _/src/main/java/com/github/langmo/gradlensis/examples/extended/Example.java_:
+
+    package com.github.langmo.gradlensis.examples.extended;
+    import javax.swing.JOptionPane;
+    
+    public class Example {
+        public static void main(String[] args) {
+            JOptionPane.showMessageDialog(null, "Gradle-NSIS extended example running on "+System.getProperty("os.arch")+".", "Gradle-NSIS extended example", JOptionPane.INFORMATION_MESSAGE);
+            System.exit(0);
+        }
+    }
+
 File _/settings.gradle_:
 
     rootProject.name = 'extended'
@@ -235,3 +247,54 @@ File _/build.gradle_:
     createInstaller32.description = createInstaller.description
     createInstallers.group = createInstaller.group
     createInstallers.description = "Creates both the 32bit and the 64bit NSIS installers"
+
+File _/extended.nsi_:
+
+    ;Include Modern UI
+    !include "MUI2.nsh"
+    
+    ;Basic configuration
+    Name "gradle-nsis extended example"
+    !ifdef WIN64
+        OutFile "ExtendedExample64bit.exe"
+    !else
+        OutFile "ExtendedExample32bit.exe"
+    !endif
+    Unicode True
+    ;Default installation folder
+    !ifdef WIN64
+        InstallDir "$PROGRAMFILES64\gradle_nsis_extended_example"
+    !else
+        InstallDir "$PROGRAMFILES32\gradle_nsis_extended_example"
+    !endif
+    ;Request admin privileges for Vista/7/8/10
+    RequestExecutionLevel admin
+    !define MUI_ABORTWARNING
+    
+    ;Pages
+    !insertmacro MUI_PAGE_LICENSE "LICENSE"
+    !insertmacro MUI_PAGE_COMPONENTS
+    !insertmacro MUI_PAGE_DIRECTORY
+    !insertmacro MUI_PAGE_INSTFILES  
+      
+    ;Languages
+    !insertmacro MUI_LANGUAGE "English"
+    
+    ;Installer Sections
+    Section "gradle-nsis extended example" SecExample
+        SetOutPath "$INSTDIR"
+        FILE LICENSE
+        !ifdef WIN64
+            FILE Example64.exe
+        !else
+            FILE Example32.exe
+        !endif
+        SetOutPath "$INSTDIR\lib"
+        FILE "lib\*"
+    SectionEnd
+    
+    ;Descriptions
+    LangString DESC_SecExample ${LANG_ENGLISH} "Copies the license, the JAR and the EXE file."
+    !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
+        !insertmacro MUI_DESCRIPTION_TEXT ${SecExample} $(DESC_SecExample)
+    !insertmacro MUI_FUNCTION_DESCRIPTION_END
