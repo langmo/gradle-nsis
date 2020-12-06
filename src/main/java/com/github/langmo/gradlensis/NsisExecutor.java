@@ -25,7 +25,7 @@ import org.gradle.process.ExecSpec;
 
 class NsisExecutor 
 {
-	private static final String SOURCE_NSIS_FOLDER = "nsis-3.0.5";
+	private static final String SOURCE_NSIS_FOLDER = "nsis-3.06.1";
 	private static final String SOURCE_PLUGINS_FOLDER = "plugins";
 	private static final String DEST_PLUGINS_FOLDER = "Plugins";
 	private static final String DEST_PLUGINS_ANSI_FOLDER = "x86-ansi";
